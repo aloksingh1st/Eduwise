@@ -1,15 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Img, Text } from "./..";
+import { IoCartOutline } from "react-icons/io5";
 import axios from "axios";
-
-
+import { CgProfile } from "react-icons/cg";
 
 export default function Header1({ ...props }) {
   const [multiDropdownVisible, setMultiDropdownVisible] = useState(false);
   const [doubleDropdownVisible, setDoubleDropdownVisible] = useState(false);
+  const [cartItems, setCartItems] = useState();
 
   const accessToken = localStorage.getItem("accessToken");
   const userData = JSON.parse(localStorage.getItem("userData"));
+
+  useEffect(() => {
+    const getItems = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/v1/cart/getall");
+        setCartItems(res.data.data.length);
+      } catch (e) {}
+    };
+
+    getItems();
+  }, []);
 
   useEffect(() => {
     // Close dropdowns when clicking outside
@@ -123,14 +135,10 @@ export default function Header1({ ...props }) {
         <div className="flex flex-row justify-start items-center gap-2.5">
           <a href="/cart">
             <Text as="p" className="!text-gray-900 text-right !font-medium">
-              Cart (0)
+              Cart ({cartItems})
             </Text>
           </a>
-          <Img
-            src="images/img_shopping_bag_24.svg"
-            alt="shoppingbagtwen"
-            className="h-[30px] w-[30px]"
-          />
+          <IoCartOutline />
         </div>
 
         <div>
@@ -141,11 +149,7 @@ export default function Header1({ ...props }) {
             <Text as="p" className="!text-gray-900 text-right !font-medium">
               {userData ? userData.fullName : "My Account"}
             </Text>
-            <Img
-              src="images/img_profile_24_outline.svg"
-              alt="profiletwentyfo"
-              className="h-[30px] w-[30px]"
-            />
+            <CgProfile />
           </div>
 
           <div className="absolute">

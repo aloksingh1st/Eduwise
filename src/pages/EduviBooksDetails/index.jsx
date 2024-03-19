@@ -1,12 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Heading, Button, RatingBar, Text, Img } from "../../components";
 import EduviCoursesDetailsMaincard from "../../components/EduviCoursesDetailsMaincard";
 import EduviCoursesDetailsMaincard1 from "../../components/EduviCoursesDetailsMaincard1";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function EduviCoursesDetailsPage() {
+  const { id } = useParams();
+  const [book, setBook] = useState({});
+
+  useEffect(() => {
+    const getBookById = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/books/getbook/${id}`
+        );
+        setBook(response.data);
+      } catch (error) {
+        alert("Error fetching book:", error);
+      }
+    };
+
+    getBookById();
+  }, [id]);
+
+  const addToCartHandler = async () => {
+    const bodyData = {
+      name: book?.book?.title,
+      price: book?.book?.price,
+      productId: id,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/cart/addToCart",
+        bodyData
+      );
+
+      alert("Item added to cart");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -25,38 +64,132 @@ export default function EduviCoursesDetailsPage() {
                 as="p"
                 className="!text-black-900_02 tracking-[0.48px] !font-medium"
               >
-                Home | Courses | Course Details
+                Home | Books | {book?.book?.title}
               </Text>
               <div className="flex flex-col items-start justify-start w-full gap-[29px]">
                 <div className="flex flex-row justify-start w-full">
                   <div className="h-[455px] w-full relative">
                     <Img
-                      src="images/img_pexels_vanessa_garcia_6325959.png"
+                      src={book?.book?.avatar}
                       alt="pexelsvanessa"
                       className="justify-center h-[455px] w-full left-0 bottom-0 right-0 top-0 m-auto object-cover absolute rounded-[20px]"
                     />
-                    <Button
-                      size="4xl"
-                      shape="circle"
-                      className="w-[60px] left-0 bottom-0 right-0 top-0 m-auto absolute"
-                    >
-                      <Img src="images/img_call_button.svg" />
-                    </Button>
                   </div>
                 </div>
                 <Heading size="lg" as="h1" className="!text-black-900_02">
-                  Maths - for Standard 3 Students | Episode 2
+                  {book?.book?.title}
                 </Heading>
               </div>
             </div>
-            <div className="flex flex-col items-start justify-start w-[32%] mr-[5px] gap-3">
+
+            <div className="flex flex-col items-center justify-start w-[32%] gap-[23px] mt-10">
+              <div className="flex flex-col items-center justify-center w-full gap-[19px] p-[19px] bg-white-A700 rounded-[10px]">
+                <div className="flex flex-row justify-between items-center w-full mt-[5px]">
+                  <Heading size="s" as="h6" className="!text-gray-700_01">
+                    Price
+                  </Heading>
+                  <Heading
+                    size="lg"
+                    as="h4"
+                    className="!text-deep_orange-400 text-right !font-bold"
+                  >
+                    ₹{book?.book?.price}
+                  </Heading>
+                </div>
+                <div className="flex flex-row justify-between w-full">
+                  <Heading
+                    size="s"
+                    as="h5"
+                    className="mb-0.5 !text-gray-700_01"
+                  >
+                    Author
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right underline">
+                    {book?.book?.author}
+                  </Heading>
+                </div>
+                <div className="flex flex-row justify-between items-start w-full">
+                  <Heading size="s" as="h5" className="!text-gray-700_01">
+                    Ratings
+                  </Heading>
+                  <RatingBar
+                    value={5}
+                    isEditable={true}
+                    color="#ffc107"
+                    activeColor="#ffc107"
+                    size={16}
+                    className="flex justify-between w-[92px] mt-0.5"
+                  />
+                </div>
+                {/* <div className="flex flex-row justify-between w-full">
+                  <Heading
+                    size="s"
+                    as="h5"
+                    className="mb-0.5 !text-gray-700_01"
+                  >
+                    Durations
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    10 Days
+                  </Heading>
+                </div> */}
+                {/* <div className="flex flex-row justify-between w-full">
+                  <Heading size="s" as="h5" className="mt-px !text-gray-700_01">
+                    Lessons
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    30
+                  </Heading>
+                </div> */}
+                {/* <div className="flex flex-row justify-between w-full">
+                  <Heading size="s" as="h5" className="mt-px !text-gray-700_01">
+                    Quizzes
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    5
+                  </Heading>
+                </div> */}
+                {/* <div className="flex flex-row justify-between w-full">
+                  <Heading size="s" as="h5" className="mb-px !text-gray-700_01">
+                    Certificate
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    Yes
+                  </Heading>
+                </div> */}
+                <div className="flex flex-row justify-between w-full">
+                  <Heading size="s" as="h5" className="!text-gray-700_01">
+                    Language
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    English
+                  </Heading>
+                </div>
+                <div className="flex flex-row justify-between w-full mb-[5px]">
+                  <Heading size="s" as="h5" className="mt-px !text-gray-700_01">
+                    Type
+                  </Heading>
+                  <Heading size="s" as="h5" className="text-right">
+                    Hardprint
+                  </Heading>
+                </div>
+              </div>
+              <Button
+                size="2xl"
+                className="w-full font-medium"
+                onClick={addToCartHandler}
+              >
+                Add To Cart
+              </Button>
+            </div>
+            {/* <div className="flex flex-col items-start justify-start w-[32%] mr-[5px] gap-3">
               <Heading size="lg" as="h2" className="!text-black-900_02">
                 Course Playlists
               </Heading>
               <div className="flex flex-col w-full gap-4">
                 <div className="flex flex-row justify-start items-center w-full gap-2.5 p-2.5 bg-white-A700 cursor-pointer rounded-[10px] hover:shadow-sm">
                   <Img
-                    src="images/img_image.png"
+                    src={book?.book?.avatar}
                     alt="image"
                     className="w-[23%] object-cover rounded-[5px]"
                   />
@@ -205,10 +338,10 @@ export default function EduviCoursesDetailsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
-        <div className="flex flex-row justify-center w-full">
+        {/* <div className="flex flex-row justify-center w-full">
           <div className="flex flex-row justify-start items-start w-full gap-10 max-w-7xl">
             <div className="flex flex-col items-center justify-start w-[66%] gap-6">
               <div className="flex flex-col items-start justify-start w-full gap-2">
@@ -289,7 +422,7 @@ export default function EduviCoursesDetailsPage() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-start w-[32%] gap-[23px]">
+            { <div className="flex flex-col items-center justify-start w-[32%] gap-[23px]">
               <div className="flex flex-col items-center justify-center w-full gap-[19px] p-[19px] bg-white-A700 rounded-[10px]">
                 <div className="flex flex-row justify-between items-center w-full mt-[5px]">
                   <Heading size="s" as="h6" className="!text-gray-700_01">
@@ -384,9 +517,9 @@ export default function EduviCoursesDetailsPage() {
               <Button size="2xl" className="w-full font-medium">
                 Purchase Course
               </Button>
-            </div>
+            </div> }
           </div>
-        </div>
+        </div> */}
         <div className="flex flex-row justify-center w-full">
           <div className="flex flex-col items-start justify-start w-full gap-12 max-w-7xl">
             <Heading size="3xl" as="h2" className="!font-metropolis">
